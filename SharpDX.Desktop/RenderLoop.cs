@@ -72,10 +72,7 @@ namespace SharpDX.Windows
         /// <exception cref="System.InvalidOperationException">Control is already disposed</exception>
         public Control Control
         {
-            get
-            {
-                return control;
-            }
+            get => control;
             set
             {
                 if(control == value) return;
@@ -209,12 +206,10 @@ namespace SharpDX.Windows
             if(renderCallback == null) throw new ArgumentNullException("renderCallback");
 
             form.Show();
-            using (var renderLoop = new RenderLoop(form) { UseApplicationDoEvents = useApplicationDoEvents })
+            using var renderLoop = new RenderLoop(form) { UseApplicationDoEvents = useApplicationDoEvents };
+            while(renderLoop.NextFrame())
             {
-                while(renderLoop.NextFrame())
-                {
-                    renderCallback();
-                }
+                renderCallback();
             }
         }
 
@@ -224,13 +219,6 @@ namespace SharpDX.Windows
         /// <value>
         /// 	<c>true</c> if this instance is application idle; otherwise, <c>false</c>.
         /// </value>
-        public static bool IsIdle
-        {
-            get
-            {
-                NativeMessage msg;
-                return (bool)(Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) == 0);
-            }
-        }
-   }
+        public static bool IsIdle => Win32Native.PeekMessage(out _, IntPtr.Zero, 0, 0, 0) == 0;
+    }
 }
